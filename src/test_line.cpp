@@ -41,7 +41,6 @@ int main()
 	int l_speed, r_speed;
 	l_speed = 0;
 	r_speed = 0;
-	float pixRasio;
 	while (1) {
 		Capture(&src);//画像の撮影
 		width = src.cols;//画像サイズの取得
@@ -141,7 +140,7 @@ float Rasio(float r, float l){
 }
 
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed){
-	int pixRasio = Rasio(rwhitepix, lwhitepix);
+	float pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
 		printf("%f",pixRasio);
 

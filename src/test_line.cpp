@@ -166,7 +166,7 @@ void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix ,
 	r_pix[1]=r_pix[0];
 	l_pix[0]=lwhitepix;
 	r_pix[0]=rwhitepix;
-	printf("%d,%d,%d,%d\n"lpix[1],r_pix[1],l_pix[0],r_pix[0])
+	printf("%d,%d,%d,%d\n"lpix[1],r_pix[1],l_pix[0],r_pix[0]);
 	if(rwhitepix > lwhitepix){
 			*dlspeed = r_pix[1]-r_pix[0];
 			*drspeed = l_pix[1]-l_pix[0];

@@ -67,7 +67,7 @@ int main()
 		print(rwhitepix);
 		print(lwhitepix);
 		//P制御
-		GetPGAIN(PLspeed, PRspeed, rwhitepix, lwhitepix ,speed,base_speed)
+		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
 		l_speed = PLspeed;
 		r_speed = PRspeed;
 

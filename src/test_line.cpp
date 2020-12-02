@@ -3,6 +3,8 @@
 #include <vector>
 #include "arduino.h"
 #include "request.h"
+#define PGAIN 1f
+#define DGAIN 1f
 using namespace std;
 using namespace cv;
 
@@ -13,6 +15,7 @@ int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed);
+void GetDGAIN(int* dlspeed, int* drspeed, int* l_pix, int* r_pix, int rwhitepix , int lwhitepix);
 VideoCapture cap(0);//デバイスのオープン
 enum
 {
@@ -36,7 +39,7 @@ int main()
 	int r_pix[1];
 	int l_pix[1];
 	int DRspeed, DLspeed;
-	r_pix[1]=l_pix[1]=DRspeed, DLspeed=0;
+	r_pix[1]=l_pix[1]=DRspeed=DLspeed=0;
 	//制御後速度
 	int l_speed, r_speed;
 	l_speed = 0;
@@ -67,9 +70,12 @@ int main()
 		print(lwhitepix);
 		//P制御
 		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
-		l_speed = PLspeed;
-		r_speed = PRspeed;
-
+		//D制御
+		GetDGAIN(&DLspeed, &DRspeed, l_pix, r_pix, rwhitepix , lwhitepix);
+		l_speed = PLspeed+DLspeed;
+		r_speed = PRspeed+DRspeed;
+		printf("PL\n%d\n",DLspeed);
+		printf("PR\n%d\n",DRspeed);
 		request_set_runmode(CRV, l_speed, r_speed);
 		waitKey(10);
 		/*
@@ -150,5 +156,19 @@ void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int spee
 		}else{
 			*plspeed = speed*(1-pixRasio)+base_speed;
 			*prspeed = speed*pixRasio+base_speed;
+		}
+}
+
+void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix , int lwhitepix){
+	l_pix[1]=l_pix[0];
+	r_pix[1]=r_pix[0];
+	l_pix[0]=lwhitepix;
+	r_pix[0]=rwhitepix;
+	if(rwhitepix > lwhitepix){
+			*dlspeed = r_pix[1]-r_pix[0];
+			*drspeed = l_pix[1]-l_pix[1];
+		}else{
+			*dlspeed = l_pix[1]-l_pix[1];
+			*drspeed = r_pix[1]-r_pix[0];
 		}
 }

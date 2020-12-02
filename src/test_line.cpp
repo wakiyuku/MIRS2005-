@@ -74,7 +74,7 @@ int main()
 		GetDGAIN(&DLspeed, &DRspeed, l_pix, r_pix, rwhitepix, lwhitepix);
 		l_speed = PLspeed+DLspeed;
 		r_speed = PRspeed+DRspeed;
-		printf("\nPL\n%d\n",DLspeed);
+		printf("PL\n%d\n",DLspeed);
 		printf("PR\n%d\n",DRspeed);
 		request_set_runmode(CRV, l_speed, r_speed);
 		waitKey(10);
@@ -148,7 +148,7 @@ float Rasio(float r, float l){
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed){
 	float pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
-		printf("%f",pixRasio);
+		printf("%f\n",pixRasio);
 
 	if(rwhitepix > lwhitepix){
 			*plspeed = speed*pixRasio+base_speed;
@@ -164,7 +164,6 @@ void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix ,
 	r_pix[1]=r_pix[0];
 	l_pix[0]=lwhitepix;
 	r_pix[0]=rwhitepix;
-	printf("l_pix=%d\n",l_pix[0]);
 	if(rwhitepix > lwhitepix){
 			*dlspeed = r_pix[1]-r_pix[0];
 			*drspeed = l_pix[1]-l_pix[0];

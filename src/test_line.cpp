@@ -12,7 +12,7 @@ int RightTrim(Mat, int, int);
 int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
-
+void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed)
 VideoCapture cap(0);//デバイスのオープン
 enum
 {
@@ -24,17 +24,25 @@ int main()
 {
 	if(arduino_open() != 0) return -1;
 	vector< vector<Point> > contours;
-	int width, height;
 	Mat src, dst;
 	Vec4f output;
-	int speed, dist, base_speed;
+	int width, height;
+	//P制御用
+	int speed, base_speed,PRspeed,PLspeed;
 	speed = 100;
-	dist = 180;
 	base_speed = 50;
-	int ROTmode = 2;
+	PRspeed = PLspeed = 0;
+	//D制御用
+	int r_pix[1];
+	int l_pix[1];
+	int DRspeed, DLspeed;
+	r_pix[1]=l_pix[1]=DRspeed, DLspeed=0;
+	//制御後速度
+	int l_speed, r_speed;
+	l_speed = 0;
+	r_speed = 0;
 	float pixRasio;
 	while (1) {
-
 		Capture(&src);//画像の撮影
 		width = src.cols;//画像サイズの取得
 		height = src.rows;
@@ -46,18 +54,6 @@ int main()
 		if (!contours[0].empty()) {
 			fitLine(contours[0], output, DIST_L2, 0, 0.01, 0.01);	
 		}
-
-		cout << "vector\n";
-		for (int i = 0; i < 4; i++) {
-			cout << output[i];
-			cout << "\n";
-		}
-
-		cout << width;
-		cout << "\n";
-		cout << height;
-		cout << "\n";
-
 		int righty, lefty;
 		righty = (height - output.val[2])*output.val[1] / output.val[0] + output.val[3];
 		lefty = (-output.val[2] * output.val[1] / output.val[0]) + output.val[3];
@@ -70,28 +66,26 @@ int main()
 		int lwhitepix = LeftTrim(dst, height, width);
 		print(rwhitepix);
 		print(lwhitepix);
+		//P制御
+		GetPGAIN(PLspeed, PRspeed, rwhitepix, lwhitepix ,speed,base_speed)
+		l_speed = PLspeed;
+		r_speed = PRspeed;
+
+		request_set_runmode(CRV, l_speed, r_speed);
+		waitKey(10);
+		/*
 		pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
 		printf("%f",pixRasio);
 		if(rwhitepix > lwhitepix){
-			/*if(ROTmode != E_RIGHT){
-				request_set_runmode(ROT, speed*pixRasio+10, dist);
-				printf("right\n");
-			};
-			ROTmode = E_RIGHT;*/
 			request_set_runmode(CRV, speed*pixRasio+base_speed, speed*(1-pixRasio)+base_speed);
 			waitKey(10);
 			printf("right\n");
 		}else{
-			/*if(ROTmode != E_LEFT){
-				request_set_runmode(ROT, speed*pixRasio+10, -dist);
-				printf("left\n");
-			};
-			ROTmode = E_LEFT;*/
 			request_set_runmode(CRV,  speed*(1-pixRasio)+base_speed, speed*pixRasio+base_speed);
 			waitKey(10);
 			printf("left\n");
-		}
+		}*/
 	}
 	return 0;
 }
@@ -146,3 +140,16 @@ float Rasio(float r, float l){
 	}
 }
 
+void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed){
+	pixRasio = Rasio(rwhitepix, lwhitepix);
+		printf("rasio=");
+		printf("%f",pixRasio);
+
+	if(rwhitepix > lwhitepix){
+			*plspeed = speed*pixRasio+base_speed;
+			*prspeed = speed*(1-pixRasio)+base_speed;
+		}else{
+			*plspeed = speed*(1-pixRasio)+base_speed;
+			*prspeed = speed*pixRasio+base_speed;
+		}
+}

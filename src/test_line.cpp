@@ -12,7 +12,7 @@ int RightTrim(Mat, int, int);
 int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
-void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed)
+void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed);
 VideoCapture cap(0);//デバイスのオープン
 enum
 {
@@ -141,7 +141,7 @@ float Rasio(float r, float l){
 }
 
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed){
-	pixRasio = Rasio(rwhitepix, lwhitepix);
+	int pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
 		printf("%f",pixRasio);
 

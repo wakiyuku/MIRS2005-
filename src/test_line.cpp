@@ -39,8 +39,8 @@ int main()
 	int r_pix[1];
 	int l_pix[1];
 	int DRspeed, DLspeed;
-	r_pix[1]=0;
-	l_pix[1]=0;
+	r_pix[0]=0;
+	l_pix[0]=0;
 	DRspeed=DLspeed=0;
 	//制御後速度
 	int l_speed, r_speed;

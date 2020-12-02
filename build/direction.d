@@ -1,8 +1,8 @@
-build/direction.o: src/direction.c include/direction.h include/request.h \
+build/direction.o: src/direction.c include/direction.h src/request.h \
  include/uss.h
 
 include/direction.h:
 
-include/request.h:
+src/request.h:
 
 include/uss.h:

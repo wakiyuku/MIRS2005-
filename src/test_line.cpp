@@ -71,10 +71,10 @@ int main()
 		//P制御
 		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
 		//D制御
-		GetDGAIN(&DLspeed, &DRspeed, l_pix, r_pix, rwhitepix , lwhitepix);
+		GetDGAIN(&DLspeed, &DRspeed, l_pix, r_pix, rwhitepix, lwhitepix);
 		l_speed = PLspeed+DLspeed;
 		r_speed = PRspeed+DRspeed;
-		printf("PL\n%d\n",DLspeed);
+		printf("\nPL\n%d\n",DLspeed);
 		printf("PR\n%d\n",DRspeed);
 		request_set_runmode(CRV, l_speed, r_speed);
 		waitKey(10);
@@ -164,11 +164,12 @@ void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix ,
 	r_pix[1]=r_pix[0];
 	l_pix[0]=lwhitepix;
 	r_pix[0]=rwhitepix;
+	printf("l_pix=%d\n",lpix[0]);
 	if(rwhitepix > lwhitepix){
 			*dlspeed = r_pix[1]-r_pix[0];
-			*drspeed = l_pix[1]-l_pix[1];
+			*drspeed = l_pix[1]-l_pix[0];
 		}else{
-			*dlspeed = l_pix[1]-l_pix[1];
+			*dlspeed = l_pix[1]-l_pix[0];
 			*drspeed = r_pix[1]-r_pix[0];
 		}
 }

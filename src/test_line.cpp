@@ -3,26 +3,28 @@
 #include <vector>
 #include "arduino.h"
 #include "request.h"
-//#pragma comment(lib, "opencv_world343d.lib")
 using namespace std;
 using namespace cv;
-VideoCapture cap(0);//デバイスのオープン
-enum
-{
-	E_RIGHT,
-	E_LEFT,
-};
+
 int Trim(Mat,int, int, int, int);
 int LeftTrim(Mat, int, int);
 int RightTrim(Mat, int, int);
 int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
+
+VideoCapture cap(0);//デバイスのオープン
+enum
+{
+	E_RIGHT,
+	E_LEFT,
+};
+
 int main()
 {
 	if(arduino_open() != 0) return -1;
 	vector< vector<Point> > contours;
-	int width, height;//グレースケールで画像読み込み
+	int width, height;
 	Mat src, dst;
 	Vec4f output;
 	int speed, dist, base_speed;

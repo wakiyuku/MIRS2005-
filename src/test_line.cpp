@@ -15,7 +15,7 @@ int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed);
-void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix)
+void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix);
 VideoCapture cap(0);//デバイスのオープン
 enum
 {

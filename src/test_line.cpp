@@ -162,6 +162,7 @@ void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int spee
 }
 
 void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix , int lwhitepix){
+	printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
 	l_pix[1]=l_pix[0];
 	r_pix[1]=r_pix[0];
 	l_pix[0]=lwhitepix;

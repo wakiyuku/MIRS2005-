@@ -4,7 +4,7 @@
 #include "arduino.h"
 #include "request.h"
 #define PGAIN 1f
-#define DGAIN 1f
+#define DGAIN 0.01f
 using namespace std;
 using namespace cv;
 
@@ -70,10 +70,12 @@ int main()
 		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
 		//D制御
 		GetDGAIN(&DLspeed, &DRspeed, &past_l_pix, &past_r_pix, rwhitepix, lwhitepix);
-		l_speed = PLspeed+DLspeed;
-		r_speed = PRspeed+DRspeed;
+		//走行スピード
+		l_speed = PLspeed+DGAIN*DLspeed;
+		r_speed = PRspeed+DGAIN*DRspeed;
 		printf("PL\n%d\n",DLspeed);
 		printf("PR\n%d\n\n\n",DRspeed);
+		//走行スピード設定
 		request_set_runmode(CRV, l_speed, r_speed);
 		waitKey(10);
 		/*
@@ -158,14 +160,14 @@ void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int spee
 }
 
 void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix){
-	*past_l_pix=lwhitepix;
-	*past_r_pix=rwhitepix;
-	//printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
+	printf("%d,%d,%d,%d\n",*past_l_pix,*past_r_pix,lwhitepix,lwhitepix);
 	if(rwhitepix > lwhitepix){
-			*dlspeed = *past_l_pix-rwhitepix;
-			*drspeed = *past_r_pix-lwhitepix;
+			*dlspeed = -(lwhitepix-*past_l_pix);
+			*drspeed = -(rwhitepix-*past_r_pix);
 		}else{
-			*dlspeed = *past_r_pix-lwhitepix;
-			*drspeed = *past_l_pix-rwhitepix;
+			*dlspeed = -(rwhitepix-*past_r_pix);
+			*drspeed = -(lwhitepix-*past_l_pix);
 		}
+		*past_l_pix=lwhitepix;
+		*past_r_pix=rwhitepix;
 }

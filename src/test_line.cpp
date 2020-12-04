@@ -15,7 +15,7 @@ int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
 void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed);
-void GetDGAIN(int* dlspeed, int* drspeed, int* l_pix, int* r_pix, int rwhitepix , int lwhitepix);
+void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix)
 VideoCapture cap(0);//デバイスのオープン
 enum
 {
@@ -36,12 +36,8 @@ int main()
 	base_speed = 50;
 	PRspeed = PLspeed = 0;
 	//D制御用
-	int r_pix[1];
-	int l_pix[1];
-	int DRspeed, DLspeed;
-	r_pix[0]=0;
-	l_pix[0]=0;
-	DRspeed=DLspeed=0;
+	int past_r_pix,past_l_pix,DRspeed, DLspeed;
+	past_l_pix=past_r_pix=DRspeed=DLspeed=0;
 	//制御後速度
 	int l_speed, r_speed;
 	l_speed = 0;
@@ -73,7 +69,7 @@ int main()
 		//P制御
 		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
 		//D制御
-		GetDGAIN(&DLspeed, &DRspeed, l_pix, r_pix, rwhitepix, lwhitepix);
+		GetDGAIN(&DLspeed, &DRspeed, &past_l_pix, &past_r_pix, rwhitepix, lwhitepix);
 		l_speed = PLspeed+DLspeed;
 		r_speed = PRspeed+DRspeed;
 		printf("PL\n%d\n",DLspeed);
@@ -161,19 +157,15 @@ void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int spee
 		}
 }
 
-void GetDGAIN(int* dlspeed, int* drspeed,int* l_pix, int* r_pix, int rwhitepix , int lwhitepix){
-	l_pix[1]=l_pix[0];
-	printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
-	r_pix[1]=r_pix[0];
-	printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
-	l_pix[0]=lwhitepix;
-	r_pix[0]=rwhitepix;
-	printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
+void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix){
+	*past_l_pix=lwhitepix;
+	*past_r_pix=rwhitepix;
+	//printf("%d,%d,%d,%d\n",l_pix[1],r_pix[1],l_pix[0],r_pix[0]);
 	if(rwhitepix > lwhitepix){
-			*dlspeed = r_pix[1]-r_pix[0];
-			*drspeed = l_pix[1]-l_pix[0];
+			*dlspeed = *past_l_pix-rwhitepix;
+			*drspeed = *past_r_pix-lwhitepix;
 		}else{
-			*dlspeed = l_pix[1]-l_pix[0];
-			*drspeed = r_pix[1]-r_pix[0];
+			*dlspeed = *past_r_pix-lwhitepix;
+			*drspeed = *past_l_pix-rwhitepix;
 		}
 }

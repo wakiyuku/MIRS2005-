@@ -4,7 +4,8 @@
 #include "arduino.h"
 #include "request.h"
 #define PGAIN 1f
-#define DGAIN 0.01f
+#define DGAIN 0.002f
+#define IGAIN 0.0001f
 using namespace std;
 using namespace cv;
 
@@ -14,8 +15,9 @@ int RightTrim(Mat, int, int);
 int Capture(Mat*);
 void print(int);
 float Rasio(float , float);
-void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed);
-void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix);
+void GetPGAIN(int* plspeed, int* prspeed,int lwhitepix ,int rwhitepix,int speed,int base_speed);
+void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int lwhitepix, int rwhitepix);
+void GetIGAIN(int* ILspeed,int* IRspeed,int*accum,int lwhitepix,int rwhitepix);
 VideoCapture cap(0);//デバイスのオープン
 enum
 {
@@ -38,6 +40,9 @@ int main()
 	//D制御用
 	int past_r_pix,past_l_pix,DRspeed, DLspeed;
 	past_l_pix=past_r_pix=DRspeed=DLspeed=0;
+	//I制御用
+	int accum,IRspeed,ILspeed;
+	accum = IRspeed = ILspeed = 0;
 	//制御後速度
 	int l_speed, r_speed;
 	l_speed = 0;
@@ -67,17 +72,19 @@ int main()
 		print(rwhitepix);
 		print(lwhitepix);
 		//P制御
-		GetPGAIN(&PLspeed, &PRspeed, rwhitepix, lwhitepix ,speed,base_speed);
+		GetPGAIN(&PLspeed, &PRspeed, lwhitepix, rwhitepix,speed,base_speed);
 		//D制御
-		GetDGAIN(&DLspeed, &DRspeed, &past_l_pix, &past_r_pix, rwhitepix, lwhitepix);
+		GetDGAIN(&DLspeed, &DRspeed, &past_l_pix, &past_r_pix, lwhitepix, rwhitepix);
+		//I制御
+		GetIGAIN(&ILspeed,&IRspeed,&accum,lwhitepix, rwhitepix);
 		//走行スピード
-		l_speed = PLspeed+DGAIN*DLspeed;
-		r_speed = PRspeed+DGAIN*DRspeed;
+		l_speed = PLspeed+DGAIN*DLspeed+IGAIN*ILspeed;
+		r_speed = PRspeed+DGAIN*DRspeed+IGAIN*IRspeed;
 		printf("PL\n%d\n",DLspeed);
 		printf("PR\n%d\n\n\n",DRspeed);
 		//走行スピード設定
 		request_set_runmode(CRV, l_speed, r_speed);
-		waitKey(10);
+		
 		/*
 		pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
@@ -145,7 +152,7 @@ float Rasio(float r, float l){
 	}
 }
 
-void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int speed,int base_speed){
+void GetPGAIN(int* plspeed, int* prspeed,int lwhitepix ,int rwhitepix,int speed,int base_speed){
 	float pixRasio = Rasio(rwhitepix, lwhitepix);
 		printf("rasio=");
 		printf("%f\n",pixRasio);
@@ -159,15 +166,27 @@ void GetPGAIN(int* plspeed, int* prspeed, int rwhitepix, int lwhitepix ,int spee
 		}
 }
 
-void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int rwhitepix , int lwhitepix){
+void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int lwhitepix, int rwhitepix){
 	printf("%d,%d,%d,%d\n",*past_l_pix,*past_r_pix,lwhitepix,lwhitepix);
 	if(rwhitepix > lwhitepix){
-			*dlspeed = -(lwhitepix-*past_l_pix);
-			*drspeed = -(rwhitepix-*past_r_pix);
+			*dlspeed = lwhitepix-*past_l_pix;
+			*drspeed = rwhitepix-*past_r_pix;
 		}else{
-			*dlspeed = -(rwhitepix-*past_r_pix);
-			*drspeed = -(lwhitepix-*past_l_pix);
+			*dlspeed = rwhitepix-*past_r_pix;
+			*drspeed = lwhitepix-*past_l_pix;
 		}
 		*past_l_pix=lwhitepix;
 		*past_r_pix=rwhitepix;
+}
+
+void GetIGAIN(int* ILspeed,int* IRspeed,int*accum,int lwhitepix,int rwhitepix){
+	*accum+=(lwhitepix-rwhitepix)/1000;
+	if(accum==0){
+		*ILspeed = 0;
+		*IRspeed = 0;
+	}else{
+		*ILspeed = -*accum;
+		*IRspeed = *accum;
+	}
+	printf("%d,%d,%d\n",*accum,*ILspeed,*IRspeed);
 }

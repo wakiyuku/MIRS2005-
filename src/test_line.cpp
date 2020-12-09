@@ -15,11 +15,6 @@
 using namespace std;
 using namespace cv;
 
-enum{
-	E_RIGHT,
-	E_LEFT,
-};
-
 int Trim(Mat,int, int, int, int);
 int LeftTrim(Mat, int, int);
 int RightTrim(Mat, int, int);

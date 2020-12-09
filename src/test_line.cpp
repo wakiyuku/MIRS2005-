@@ -52,7 +52,7 @@ int main()
 		width = src.cols;//画像サイズの取得
 		height = src.rows;
 		cvtColor(src, src, CV_RGB2GRAY);//グレースケール化
-		threshold(src, dst, 128, 255, THRESH_BINARY);//二値化処理
+		threshold(src, dst, 50, 255, THRESH_BINARY);//二値化処理
 		bitwise_not(dst, dst);//白黒反転
 		/*findContours(dst, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);//画像の白いところの輪郭ベクトルの取得
 		//ライン角度の検出
@@ -85,19 +85,6 @@ int main()
 		//走行スピード設定
 		request_set_runmode(CRV, l_speed, r_speed);
 		
-		/*
-		pixRasio = Rasio(rwhitepix, lwhitepix);
-		printf("rasio=");
-		printf("%f",pixRasio);
-		if(rwhitepix > lwhitepix){
-			request_set_runmode(CRV, speed*pixRasio+base_speed, speed*(1-pixRasio)+base_speed);
-			waitKey(10);
-			printf("right\n");
-		}else{
-			request_set_runmode(CRV,  speed*(1-pixRasio)+base_speed, speed*pixRasio+base_speed);
-			waitKey(10);
-			printf("left\n");
-		}*/
 	}
 	return 0;
 }

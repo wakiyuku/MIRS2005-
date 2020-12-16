@@ -3,9 +3,9 @@
 #include <vector>
 #include "arduino.h"
 #include "request.h"
-#define PGAIN 1f
-#define DGAIN 0.002f
-#define IGAIN 0.0001f
+#define PGAIN 0.5f
+#define DGAIN 0.01f
+#define IGAIN 0.00f
 #define B_MAX 100
 #define B_MIN 0
 #define G_MAX 100
@@ -101,8 +101,8 @@ int LeftTrim(Mat bin ,int height, int width) {
 	int x, y, trimHeight, trimWidth;
 	String winName = "left";
 	x = 0;
-	y = height / 2 - 20;
-	trimHeight = 40;
+	y = height / 2 - 50;
+	trimHeight = 100;
 	trimWidth = width / 2;
 	return Trim(bin, x, y, trimWidth, trimHeight, winName);
 }
@@ -111,8 +111,8 @@ int RightTrim(Mat bin, int height, int width) {
 	int x, y, trimHeight, trimWidth;
 	String winName = "right";
 	x = width/2;
-	y = height / 2 - 20;
-	trimHeight = 40;
+	y = height / 2 - 50;
+	trimHeight = 100;
 	trimWidth = width / 2;
 	return Trim(bin, x, y, trimWidth, trimHeight, winName);
 }
@@ -120,8 +120,8 @@ int RightTrim(Mat bin, int height, int width) {
 int CheckColor(Mat rbg, int width, int height) {
 	int x, y, trimHeight, trimWidth;
 	x = width / 3;
-	y = height / 2 - 20;
-	trimHeight = 40;
+	y = height / 2 - 50;
+	trimHeight = 100;
 	trimWidth = width / 3;
 	rbg = Mat(rbg, Rect(x, y, trimWidth, trimHeight));
 	Scalar s_min = Scalar(B_MIN, G_MIN, R_MIN);
@@ -157,9 +157,8 @@ float Rasio(float r, float l){
 
 void GetPGAIN(int* plspeed, int* prspeed,int lwhitepix ,int rwhitepix,int speed,int base_speed){
 	float pixRasio = Rasio(rwhitepix, lwhitepix);
-		printf("rasio=");
-		printf("%f\n",pixRasio);
-
+	printf("rasio=");
+	printf("%f\n",pixRasio);
 	if(rwhitepix > lwhitepix){
 			*plspeed = speed*pixRasio+base_speed;
 			*prspeed = speed*(1-pixRasio)+base_speed;
@@ -171,13 +170,8 @@ void GetPGAIN(int* plspeed, int* prspeed,int lwhitepix ,int rwhitepix,int speed,
 
 void GetDGAIN(int* dlspeed, int* drspeed,int* past_l_pix, int* past_r_pix, int lwhitepix, int rwhitepix){
 	printf("%d,%d,%d,%d\n",*past_l_pix,*past_r_pix,lwhitepix,lwhitepix);
-	if(rwhitepix > lwhitepix){
-			*dlspeed = lwhitepix-*past_l_pix;
-			*drspeed = rwhitepix-*past_r_pix;
-		}else{
-			*dlspeed = rwhitepix-*past_r_pix;
-			*drspeed = lwhitepix-*past_l_pix;
-		}
+		*dlspeed = lwhitepix-*past_l_pix;
+		*drspeed = rwhitepix-*past_r_pix;
 		*past_l_pix=lwhitepix;
 		*past_r_pix=rwhitepix;
 }

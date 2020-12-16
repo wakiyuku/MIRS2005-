@@ -57,7 +57,7 @@ int main()
 		width = rbg.cols;//画像の横幅取得
 		height = rbg.rows;//画像の立幅取得
 		cvtColor(rbg, gray, CV_RGB2GRAY);//グレースケール化
-		threshold(gray, bin, 50, 255, THRESH_BINARY);//二値化処理
+		threshold(gray, bin,100, 255, THRESH_BINARY);//二値化処理
 		bitwise_not(bin, bin);//白黒反転
 		imshow("output", bin);//処理後画像の表示
 		//左右のピクセル数を比べて出力
@@ -82,7 +82,7 @@ int main()
 		printf("redpix=%d\n",CheckColor(rbg, width, height));
 		if(CheckColor(rbg, width, height)>3000){
 			request_set_runmode(STP, 0, 0);
-			print("STOP!!!!\n");
+			printf("STOP!!!!\n");
 			break;
 		}
 		request_set_runmode(CRV, l_speed, r_speed);

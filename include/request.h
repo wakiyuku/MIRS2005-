@@ -4,7 +4,8 @@
 typedef enum{
 	STP = 0,
 	STR,
-	ROT
+	ROT,
+	CRV
 } run_state_t;
 
 extern void request_set_runmode(run_state_t state, int speed, int dist);

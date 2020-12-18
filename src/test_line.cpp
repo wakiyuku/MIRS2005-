@@ -63,10 +63,10 @@ int main()
 		//左右のピクセル数を比べて出力
 		printf("count\n");
 		//左右白色ピクセル数を取得
-		int rwhitepix = RightTrim(gray, height, width);
-		int lwhitepix = LeftTrim(gray, height, width);
-		print(rwhitepix);
-		print(lwhitepix);
+		int rwhitepix = RightTrim(bin, height, width);
+		int lwhitepix = LeftTrim(bin, height, width);
+		printf("%d\n",rwhitepix);
+		printf("%d\n",lwhitepix);
 		//P制御値設定
 		GetPGAIN(&PLspeed, &PRspeed, lwhitepix, rwhitepix,speed,base_speed);
 		//D制御値設定

@@ -4,15 +4,15 @@
 #include "arduino.h"
 #include "request.h"
 #define PGAIN 1f
-#define DGAIN 0.0002f
-#define IGAIN 0.0005f
+#define DGAIN 0.0009f
+#define IGAIN 0.001f
 #define B_MAX 100
 #define B_MIN 0
 #define G_MAX 100
 #define G_MIN 0
 #define R_MAX 255
 #define R_MIN 100
-#define RASIO 0.5f
+#define RASIO 0.3f
 using namespace std;
 using namespace cv;
 
@@ -181,7 +181,8 @@ void GetDGAIN(float* dlspeed, float* drspeed,int* past_l_pix, int* past_r_pix, i
 }
 //Iゲイン設定
 void GetIGAIN(float* ILspeed,float* IRspeed,float*accum,int* past_l_pix, int* past_r_pix,int lwhitepix,int rwhitepix){
-	*accum=(*past_l_pix+lwhitepix-*past_r_pix+rwhitepix)/2;
+	//*accum=(*past_l_pix+lwhitepix-*past_r_pix+rwhitepix)/2;
+	*accum=(lwhitepix-rwhitepix);
 	if(accum==0){
 		*ILspeed = 0;
 		*IRspeed = 0;

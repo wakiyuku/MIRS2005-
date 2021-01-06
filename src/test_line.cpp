@@ -21,7 +21,7 @@ int LeftTrim(Mat, int, int);
 int RightTrim(Mat, int, int);
 int Capture(Mat*);
 int CheckColor(Mat rbg, int width, int height);
-int CheckColor(Mat rbg, int width, int height);
+int CheckColorBlack(Mat rbg, int width, int height);
 float Rasio(float , float);
 void GetPGAIN(float* plspeed, float* prspeed,int lwhitepix ,int rwhitepix,int speed,int base_speed);
 void GetDGAIN(float* dlspeed, float* drspeed,int* past_l_pix, int* past_r_pix, int lwhitepix, int rwhitepix);
@@ -90,17 +90,19 @@ int main()
 		r_speed = (PRspeed+DGAIN*DRspeed+IGAIN*IRspeed)*RASIO;
 		printf("r_speed%f\n",r_speed);
 		printf("l_speed%f\n\n\n",l_speed);
-		//走行スピード設定
-		//printf("redpix=%d\n",CheckColor(rbg, width, height));
+		//赤色確認
 		if(CheckColor(rbg, width, height)>2000){
 			request_set_runmode(ROT, 25, 180);
 			waitKey(1000);
 			while(1){
+				//エンコーダ値の取得
 				request_get_runmode(&state, &enc_speed, &enc_dist);
 				printf("state:%d\nenc_dist:%d\n",state,enc_dist);
 				if(state==STP){
 					break;
 				}
+				Capture(&rbg);//画像の撮影
+				printf("blackpix=%d\n",CheckColorBlack(rbg,width,height));
 			}
 			request_set_runmode(STP, 0, 0);
 			printf("STOP!!!!\n");
@@ -157,6 +159,20 @@ int CheckColor(Mat rbg, int width, int height) {
 	rbg = Mat(rbg, Rect(x, y, trimWidth, trimHeight));
 	Scalar s_min = Scalar(B_MIN, G_MIN, R_MIN);
 	Scalar s_max = Scalar(B_MAX, G_MAX, R_MAX);
+	inRange(rbg, s_min, s_max, rbg);
+	imshow("mask", rbg);
+	return countNonZero(rbg);
+}
+
+int CheckColorBlack(Mat rbg, int width, int height) {
+	int x, y, trimHeight, trimWidth;
+	x = width / 3;
+	y = 0;
+	trimHeight = height;
+	trimWidth = width / 3;
+	rbg = Mat(rbg, Rect(x, y, trimWidth, trimHeight));
+	Scalar s_min = Scalar(0, 0, 0);
+	Scalar s_max = Scalar(50, 50, 50);
 	inRange(rbg, s_min, s_max, rbg);
 	imshow("mask", rbg);
 	return countNonZero(rbg);

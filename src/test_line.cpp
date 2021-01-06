@@ -4,8 +4,8 @@
 #include "arduino.h"
 #include "request.h"
 #define PGAIN 1f
-#define DGAIN 0.0009f
-#define IGAIN 0.001f
+#define DGAIN 0.002f
+#define IGAIN 0.0001f
 #define B_MAX 100
 #define B_MIN 0
 #define G_MAX 100
@@ -60,7 +60,7 @@ int main()
 		width = rbg.cols;//画像の横幅取得
 		height = rbg.rows;//画像の立幅取得
 		cvtColor(rbg, gray, CV_RGB2GRAY);//グレースケール化
-		threshold(gray, bin,100, 255, THRESH_BINARY);//二値化処理
+		threshold(gray, bin, 80, 255, THRESH_BINARY);//二値化処理
 		bitwise_not(bin, bin);//白黒反転
 		imshow("output", bin);//処理後画像の表示
 		//左右のピクセル数を比べて出力
@@ -90,6 +90,7 @@ int main()
 		//走行スピード設定
 		//printf("redpix=%d\n",CheckColor(rbg, width, height));
 		if(CheckColor(rbg, width, height)>3000){
+			request_set_runmode(ROT, 30, 90);
 			request_set_runmode(STP, 0, 0);
 			printf("STOP!!!!\n");
 			break;

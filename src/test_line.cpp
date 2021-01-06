@@ -92,8 +92,8 @@ int main()
 		printf("l_speed%f\n\n\n",l_speed);
 		//赤色確認
 		if(CheckColor(rbg, width, height)>2000){
-			request_set_runmode(ROT, 25, 180);
-			waitKey(1000);
+			request_set_runmode(ROT, 25, 270);
+			waitKey(2000);
 			while(1){
 				//エンコーダ値の取得
 				request_get_runmode(&state, &enc_speed, &enc_dist);
@@ -103,6 +103,9 @@ int main()
 				}
 				Capture(&rbg);//画像の撮影
 				printf("blackpix=%d\n",CheckColorBlack(rbg,width,height));
+				if(CheckColorBlack(rbg,width,height)>20000){
+					break;
+				}
 			}
 			request_set_runmode(STP, 0, 0);
 			printf("STOP!!!!\n");
@@ -172,7 +175,7 @@ int CheckColorBlack(Mat rbg, int width, int height) {
 	trimWidth = width / 3;
 	rbg = Mat(rbg, Rect(x, y, trimWidth, trimHeight));
 	Scalar s_min = Scalar(0, 0, 0);
-	Scalar s_max = Scalar(50, 50, 50);
+	Scalar s_max = Scalar(20, 20, 20);
 	inRange(rbg, s_min, s_max, rbg);
 	imshow("mask", rbg);
 	return countNonZero(rbg);

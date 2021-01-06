@@ -54,13 +54,16 @@ int main()
 	float l_speed, r_speed;
 	l_speed = 0;
 	r_speed = 0;
+	//エンコーダー用
+	run_state_t state;
+	int enc_speed, enc_dist;
 
 	while (1) {
 		Capture(&rbg);//画像の撮影
 		width = rbg.cols;//画像の横幅取得
 		height = rbg.rows;//画像の立幅取得
 		cvtColor(rbg, gray, CV_RGB2GRAY);//グレースケール化
-		threshold(gray, bin, 80, 255, THRESH_BINARY);//二値化処理
+		threshold(gray, bin, 50, 255, THRESH_BINARY);//二値化処理
 		bitwise_not(bin, bin);//白黒反転
 		imshow("output", bin);//処理後画像の表示
 		//左右のピクセル数を比べて出力
@@ -89,8 +92,16 @@ int main()
 		printf("l_speed%f\n\n\n",l_speed);
 		//走行スピード設定
 		//printf("redpix=%d\n",CheckColor(rbg, width, height));
-		if(CheckColor(rbg, width, height)>3000){
-			request_set_runmode(ROT, 30, 90);
+		if(CheckColor(rbg, width, height)>2000){
+			request_set_runmode(ROT, 25, 180);
+			waitKey(1000);
+			while(1){
+				request_get_runmode(&state, &enc_speed, &enc_dist);
+				printf("state:%d\nenc_dist:%d\n",state,enc_dist);
+				if(state==STP){
+					break;
+				}
+			}
 			request_set_runmode(STP, 0, 0);
 			printf("STOP!!!!\n");
 			break;

@@ -28,6 +28,7 @@ int main(){
 			request_set_runmode(STR, speed, dist);
 			while(1){
 				request_get_runmode(&state, &speed, &dist);
+				printf("speed=%d\n",speed);
 				if( state == STP ) break;
 			}
 

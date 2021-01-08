@@ -4,15 +4,15 @@
 #include "arduino.h"
 #include "request.h"
 #define PGAIN 1f
-#define DGAIN 0.002f
-#define IGAIN 0.0001f
+#define DGAIN 0.001f
+#define IGAIN 0.0006f
 #define B_MAX 100
 #define B_MIN 0
 #define G_MAX 100
 #define G_MIN 0
 #define R_MAX 255
 #define R_MIN 100
-#define RASIO 0.3f
+#define RASIO 0.5f
 using namespace std;
 using namespace cv;
 
@@ -103,7 +103,7 @@ int main()
 				}
 				Capture(&rbg);//画像の撮影
 				printf("blackpix=%d\n",CheckColorBlack(rbg,width,height));
-				if(CheckColorBlack(rbg,width,height)>20000){
+				if(CheckColorBlack(rbg,width,height)>19000){
 					break;
 				}
 			}
@@ -129,7 +129,7 @@ int Capture(Mat* frame){
 //画像のトリミングをして、白色ピクセル数を返す。
 int Trim(Mat bin,int x, int y, int width, int height, String winName) {
 	bin = Mat(bin, Rect(x, y, width, height));
-	//imshow(winName, gray);
+	imshow(winName, bin);
 	return countNonZero(bin);
 }
 //左側トリミングしピクセル数を返す
@@ -137,8 +137,8 @@ int LeftTrim(Mat bin ,int height, int width) {
 	int x, y, trimHeight, trimWidth;
 	String winName = "left";
 	x = 0;
-	y = height / 2 - 50;
-	trimHeight = 100;
+	y = height / 2 - 150;
+	trimHeight =300;
 	trimWidth = width / 2;
 	return Trim(bin, x, y, trimWidth, trimHeight, winName);
 }
@@ -147,8 +147,8 @@ int RightTrim(Mat bin, int height, int width) {
 	int x, y, trimHeight, trimWidth;
 	String winName = "right";
 	x = width/2;
-	y = height / 2 - 50;
-	trimHeight = 100;
+	y = height / 2 - 150;
+	trimHeight = 300;
 	trimWidth = width / 2;
 	return Trim(bin, x, y, trimWidth, trimHeight, winName);
 }
@@ -163,7 +163,7 @@ int CheckColor(Mat rbg, int width, int height) {
 	Scalar s_min = Scalar(B_MIN, G_MIN, R_MIN);
 	Scalar s_max = Scalar(B_MAX, G_MAX, R_MAX);
 	inRange(rbg, s_min, s_max, rbg);
-	imshow("mask", rbg);
+	//imshow("mask", rbg);
 	return countNonZero(rbg);
 }
 
